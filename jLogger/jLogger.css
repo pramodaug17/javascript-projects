@@ -1,0 +1,71 @@
+.log-container
+{
+    position: fixed;
+    margin: 0;
+    padding: 10px 0 0 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.logBox
+{
+    padding: 0 5px 5px 5px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 150px;/*
+    background-color: rgba(0, 0, 0, 0.7); */
+    font-family: monospace;
+}
+
+.hide
+{
+    display: none;
+}
+
+.critical, .warn, .error, .info, .debug
+{
+    padding: 1px 0 0 5px;
+}
+
+.error
+{
+    color: red;
+}
+
+.error .log-text
+{
+    font-weight: bolder;
+}
+
+.critical
+{
+    color: orangered;
+}
+
+.warn
+{
+    color: orange;
+}
+
+.info
+{
+    color: yellow;
+}
+
+.debug
+{
+    color: white;
+}
+
+.time
+{
+    color: lightslategrey;
+}
+
+.log-text
+{
+    margin-left: 2px;
+    padding-left: 8px;
+}

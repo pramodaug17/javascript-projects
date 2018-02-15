@@ -2,28 +2,85 @@
 (function(obj, undefined) {
     window.logger = window.logger || jLogger();
     var isLoggerOn = false;
+    var onconsolealso = false;
     var logBox = null;
     var hideRegex = new RegExp("hide");
+    var logBeforeLoad = [];
+
+    Number.prototype.pad = function(size) {
+        var s = String(this);
+        while (s.length < (size || 2)) {s = "0" + s;}
+        return s;
+    };
 
     function createLogBox() {
+        var container = document.createElement("div");
+        var div = document.createElement("div");
 
+        div.id = "logBox";
+        div.className = "logBox";
+
+        container.className = 'log-container';
+        container.appendChild(div);
+
+        return div;
+    }
+
+    function createLogLine() {
+        var div = document.createElement("div");
+        var time = document.createElement("span");
+        var msg = document.createElement("span");
+
+        time.className = "time";
+        msg.className = "log-text";
+
+        div.appendChild(time);
+        div.appendChild(msg);
+
+        return div;
+    }
+
+    function printonconsole(type, msg) {
+        if( onconsolealso && console && ('error' === type || 'critical' === type)) {
+            console.error(msg);
+        }
+        else if( onconsolealso && console && 'warn' === type) {
+            console.warn(msg);
+        }
+        else if( onconsolealso && console && 'info' === type) {
+            console.info(msg);
+        }
+        else if( onconsolealso && console && 'debug' === type) {
+            console.debug(msg);
+        }
+    }
+
+    function addLogLine(logline){
+        if(null === logBox) {
+            logBeforeLoad.push(logline);
+        }
+        else {
+            // logBox.insertBefore(logline, logBox.firstChild);
+            logBox.appendChild(logline);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
     }
 
     function initLoggerSection(opts) {
         /* Find log box. If not found then created new */
-        if ( document.getElementById("logBox") === null ) {
-            logBox = document.createElement("div");
-            logBox.id = "logBox";
-            logBox.className = "logBox hide";
-
+        if ( (logBox = document.getElementById("logBox")) === null ) {
+            logBox = createLogBox();
             document.body.appendChild(logBox);
-        } else {
-            logBox = document.getElementById("logBox");
+        }
+        isLoggerOn = true;
+
+        while(logBeforeLoad.length) {
+            addLogLine(logBeforeLoad.shift());
         }
     }
-    window.onload = initLoggerSection;
-
-
+    window.onload = initLoggerSection;/*
+    initLoggerSection();
+*/
     function toggleLogboxDisplay() {
         var className = logBox !== null ? logBox.className : "" ;
 
@@ -65,61 +122,101 @@
     }
 
     function toggleLogBox(value) {
-        if( typeof value == "undefined")
+        if( typeof value === "undefined")
             toggleLogboxDisplay();
         else if( value )
             showLogBox();
         else
             hideLogBox();
-
     }
+
     function enableLogger(value) {
         isLoggerOn = value;
     }
+
+    function enableconsole(value) {
+        onconsolealso = value;
+    }
+
     function printCritical(msg) {
         if( !isLoggerOn)
             return;
-        alert(msg);
+        var logline = createLogLine();
+        var time = new Date();
+
+        printonconsole('critical', msg);
+
+        logline.className = "critical";
+        logline.children[0].innerHTML = time.getHours().pad() + ":" +
+            time.getMinutes().pad() + ":" + time.getSeconds().pad();
+        logline.children[1].innerHTML = msg;
+
+        addLogLine(logline);
     }
+
     function printError(msg) {
         if( !isLoggerOn)
             return;
-        if( console ) {
-            console.error(msg)
-        }
-        else {
-            alert(msg);
-        }
+
+        var logline = createLogLine();
+        var time = new Date();
+
+        printonconsole('error', msg);
+
+        logline.className = "error";
+        logline.children[0].innerHTML = time.getHours().pad() + ":" +
+            time.getMinutes().pad() + ":" + time.getSeconds().pad();
+        logline.children[1].innerHTML = msg;
+
+        addLogLine(logline);
     }
     function printWarn(msg) {
         if( !isLoggerOn)
             return;
-        if( console ) {
-            console.warn(msg)
-        }
-        else {
-            alert(msg);
-        }
+        printonconsole('warn', msg);
+
+        var logline = createLogLine();
+        var time = new Date();
+
+        logline.className = "warn";
+        logline.children[0].innerHTML = time.getHours().pad() + ":" +
+            time.getMinutes().pad() + ":" + time.getSeconds().pad();
+        logline.children[1].innerHTML = msg;
+
+        addLogLine(logline);
+
     }
     function printInfo(msg) {
         if( !isLoggerOn)
             return;
-        if( console ) {
-            console.info(msg)
-        }
-        else {
-            alert(msg);
-        }
+
+        printonconsole('info', msg);
+
+        var logline = createLogLine();
+        var time = new Date();
+
+        logline.className = "info";
+        logline.children[0].innerHTML = time.getHours().pad() + ":" +
+            time.getMinutes().pad() + ":" + time.getSeconds().pad();
+        logline.children[1].innerHTML = msg;
+
+        addLogLine(logline);
     }
     function printDebug(msg) {
         if( !isLoggerOn)
             return;
-        if( console ) {
-            console.debug( msg );
-        }
-        else {
-            alert(msg);
-        }
+
+        printonconsole('debug', msg);
+
+        var logline = createLogLine();
+        var time = new Date();
+
+        logline.className = "debug";
+        logline.children[0].innerHTML = time.getHours().pad() + ":" +
+            time.getMinutes().pad() + ":" + time.getSeconds().pad();
+        logline.children[1].innerHTML = msg;
+
+        addLogLine(logline);
     }
 
     function jLogger() {
@@ -129,6 +226,9 @@
             },
             enable: function(value) {
                 enableLogger(value);
+            },
+            enableonconsole: function (value) {
+                enableconsole(value);
             },
             critical : function(text) {
                 printCritical(text);
@@ -149,7 +249,7 @@
     }
 })(this);
 
-
+/*
 logger.critical("Critical not print");
 logger.error("Error not print");
 logger.warn("Warning not print");
@@ -161,4 +261,4 @@ logger.critical("Critical print");
 logger.error("Error print");
 logger.warn("Warning print");
 logger.info("Info print");
-logger.debug("Debug print");
+logger.debug("Debug print");*/
