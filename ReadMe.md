@@ -9,3 +9,9 @@ This repository contains javascript.
 #### Description
 jLogger is logging framework for javascript project.
 
+#### Versions
+* 0.0.1 
+    * Initial version
+* 0.0.2
+    * Enable disable feature
+    * Styling of Logger box
