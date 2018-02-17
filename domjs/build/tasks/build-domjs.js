@@ -5,7 +5,7 @@ module.exports = function(grunt) {
         //Insight = require( "insight" ),
         //pkg = require( "../../package.json" ),
         srcFolder = __dirname + "/../../src/",
-        rdefineEnd = /\}\s*?\);[^}\w]*$/,
+        rdefineEnd = /}\s*?\);[^}\w]*$/,
         readf = function( fileName ) {
             return grunt.file.read( srcFolder + fileName );
         },
@@ -41,7 +41,7 @@ module.exports = function(grunt) {
         };
 
     grunt.registerMultiTask(
-        "build",
+        "build-domjs",
         "This task description",
     function() {
         var done = this.async(),

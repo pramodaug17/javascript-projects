@@ -1,5 +1,5 @@
 define([
-    "./var/arr"
-],function(arr){
-    console.log(arr);
+    "./var/arr",
+    "./core"
+],function(){return domjs;
 });

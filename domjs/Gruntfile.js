@@ -6,7 +6,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON("domjs/package.json"),
         config: grunt.config().domjs,
-        build: {
+        "build-domjs": {
             all: {
                 dest: "domjs/dist/domjs<%=pkg.version%>.js"
             }

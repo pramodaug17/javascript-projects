@@ -28,8 +28,22 @@
 
     "use strict";
 
-// @CODE
-// build-domjs.js inserts compiled  here
+
+var arr = [];
+
+
+var rselector=/(?:\s*\<([\w\W]{3})\>|#([\w-\W]+[\w\w]$))/,
+    init = domjs.fn.init = function(selector){
+        // for d$(""), d$(null), d$(), d$(false)
+        if(!selector)
+            return this;
+    };
+
+init.prototype = domjs.fn;
+
+
+
+
 
     return domjs;
 } );
