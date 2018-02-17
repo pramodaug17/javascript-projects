@@ -1,0 +1,9 @@
+{
+  "author": "Pramod Jain",
+  "dependencies": {},
+  "devDependencies": {
+    "grunt": "^1.0.2",
+    "requirejs": "^2.3.5",
+    "load-grunt-tasks": "^3.5.2"
+  }
+}

@@ -248,17 +248,3 @@
         }
     }
 })(this);
-
-/*
-logger.critical("Critical not print");
-logger.error("Error not print");
-logger.warn("Warning not print");
-logger.info("Info not print");
-logger.debug("Debug not print");
-
-logger.enable(true);
-logger.critical("Critical print");
-logger.error("Error print");
-logger.warn("Warning print");
-logger.info("Info print");
-logger.debug("Debug print");*/

@@ -1,0 +1,21 @@
+{
+  "name": "domjs",
+  "version": "0.0.1",
+  "description": "Libray to manipulate DOM object",
+  "main": "distrib/learngrunt.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Grunt",
+    "autobuild",
+    "javascript"
+  ],
+  "author": "Pramod Jain",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "load-grunt-tasks": "^3.5.2",
+    "requirejs":"^2.3.5"
+  }
+}
