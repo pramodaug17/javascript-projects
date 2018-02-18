@@ -1,5 +1,6 @@
 define([
     "./var/arr",
-    "./core"
+    "./core",
+    "./global"
 ],function(){return domjs;
 });

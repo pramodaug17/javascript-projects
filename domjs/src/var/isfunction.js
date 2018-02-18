@@ -1,7 +1,7 @@
 define( function() {
     "use strict";
 
-    return function isfunction( obj ) {
+    return function ( obj ) {
 
         // Support: Chrome <=57, Firefox <=52
         // In some browsers, typeof returns "function" for HTML <object> elements
