@@ -31,6 +31,8 @@ var rselector=/(?:\s*<([\w\W]{3})>|#([\w-\W]+[\w\W]$))/,
 
             return this;
         }
+
+        return this;
     };
 
 init.prototype = domjs.fn;
