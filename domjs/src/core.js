@@ -1,5 +1,4 @@
 define([
-    "./core/init",
     "./var/arr",
     "./var/isfunction",
     "./var/getPrototypeOf",
@@ -17,8 +16,16 @@ define([
 
             // The jQuery object is actually just the init constructor 'enhanced'
             // Need init if jQuery is called (just allow error to be thrown if not included)
-            return new jQuery.fn.init( selector, context );
-        }
+            return new domjs.fn.init( selector, context );
+        };
+
+    domjs.fn = domjs.prototype = {
+        version: version,
+        // Constructor of domjs js
+        constructor: domjs,
+        // Number of initial objects is being holded by domjs
+        length: 0
+    };
 
     domjs.extend = domjs.fn.extend = function() {
         var options, name, src, copy, copyIsArray, clone,
