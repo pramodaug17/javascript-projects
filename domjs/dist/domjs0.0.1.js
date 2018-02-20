@@ -202,6 +202,10 @@ var
     });
 
     // Return the modified object
+domjs.extend({
+        css: function(prop, value){}
+    });
+
 
 var rselector=/(?:\s*<([\w\W]{3})>|#([\w-\W]+[\w\W]$))/,
     init = domjs.fn.init = function(selector){
