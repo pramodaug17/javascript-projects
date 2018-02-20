@@ -1,13 +1,16 @@
 define([
     "./var/arr",
-    "./var/isfunction",
+    "./var/classType",
     "./var/getPrototypeOf",
     "./var/hasOwnProp",
     "./var/fn2string",
     "./var/objFnString",
-    "./var/isLikeArray"
-], function(init, arr, isfunction, getPrototypeOf, hasOwnProp, fn2string,
-            objFnString, isLikeArray){
+    "./var/isLikeArray",
+    "./var/isfunction",
+    "./var/iswindowObj",
+    "./var/toStringfn"
+], function(arr, classType, getPrototypeOf, hasOwnProp, fn2string, objFnString,
+            isLikeArray, isfunction){
     var
         version = "@VERSION",
 
@@ -137,6 +140,11 @@ define([
         }
     });
 
+    // function for checking type of
+    domjs.each(("Boolean Number String Function Array Date RegExp Object Error "
+        +"Symbol").split(" "), function(_, name){
+        classType["[object " + name + "]"] = name.toLowerCase();
+    });
     // Return the modified object
     return target;
 });

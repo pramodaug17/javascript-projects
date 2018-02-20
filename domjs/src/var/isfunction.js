@@ -1,6 +1,5 @@
 define( function() {
     "use strict";
-
     return function ( obj ) {
 
         // Support: Chrome <=57, Firefox <=52

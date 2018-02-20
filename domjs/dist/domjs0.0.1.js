@@ -31,6 +31,16 @@
 
 var arr = [];
 
+var classType = {};
+
+var getPrototypeOf = Object.getPrototypeOf;
+
+var hasOwnProp = classType.hasOwnProperty;
+
+var fn2string = hasOwnProp.toString;
+
+var objFnString = fn2string.call( Object );
+
 var isfunction = function ( obj ) {
 
         // Support: Chrome <=57, Firefox <=52
@@ -41,35 +51,37 @@ var isfunction = function ( obj ) {
     };
 
 
-var getPrototypeOf = Object.getPrototypeOf;
-
-var classType = {};
-
-var hasOwnProp = classType.hasOwnProperty;
-
-var fn2string = hasOwnProp.toString;
-
-var objFnString = fn2string.call( Object );
-
 var iswindowObj = function ( obj ) {
         return obj != null && obj === obj.window;
     };
 
+var toStringfn = classType.toString;
+
+
+    function intoType( obj ) {
+        if ( obj == null ) {
+            return obj + "";
+        }
+
+        return typeof obj === "object" || typeof obj === "function" ?
+            classType[ toStringfn.call( obj ) ] || "object" :
+            typeof obj;
+    }
 var isLikeArray = function ( obj ) {
 
         // Support: real iOS 8.2 only (not reproducible in simulator)
         // `in` check used to prevent JIT error (gh-2145)
         // hasOwn isn't used here due to false negatives
         // regarding Nodelist length in IE
-        var length = !!obj && "length" in obj && obj.length,
-            type = toType( obj );
+        var len = !!obj && "length" in obj && obj.length,
+            type = intoType( obj );
 
         if ( isfunction( obj ) || iswindowObj( obj ) ) {
             return false;
         }
 
-        return type === "array" || length === 0 ||
-            typeof length === "number" && length > 0 && ( length - 1 ) in obj;
+        return type === "array" || len === 0 ||
+            typeof len === "number" && len > 0 && ( len - 1 ) in obj;
     };
 
 var
@@ -201,9 +213,36 @@ var
         }
     });
 
+    // function for checking type of
+    domjs.each(("Boolean Number String Function Array Date RegExp Object Error "
+        +"Symbol").split(" "), function(_, name){
+        classType["[object " + name + "]"] = name.toLowerCase();
+    });
     // Return the modified object
-domjs.extend({
-        css: function(prop, value){}
+
+    function applyCss(prop, value) {
+        var cssprop;
+        if("string"  === intoType(prop)) {
+            // "width=100px" "width=+10" "width=-10" "width+=10" "width-=10"
+            // "width"
+            cssprop = rprop.exec(prop);
+            if(null === cssprop[3] || undefined === value) {
+                // get CSS property
+            }
+        } else if("array" === intoType(prop)) {
+            // ["width=100px","height+=10","width-=10","width=-10",
+            // "width=+10"]
+        } else if( "object" === intoType(prop)) {
+            // {width : "+10"}, {width: "10px"}
+        } else {
+            // is not correct format
+        }
+    }
+var rprop = /(?:([a-zA-Z]+)([+-]*=[+-]*)*(\d+)*(px)?)/;
+    domjs.fn.extend({
+        css: function(prop, value){
+            applyCss(prop, value);
+        }
     });
 
 

@@ -1,5 +1,5 @@
 define([
-//    "./core",
+    "./core",
     "./css",
     "./core/init",
     "./global"
