@@ -1,5 +1,5 @@
 define([
-    "./isfunction",
+    "./isFn",
     "./iswindowObj",
     "../core/intoType"
 ], function(isfunction, iswindowObj, intoType){

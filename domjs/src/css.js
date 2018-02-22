@@ -6,7 +6,8 @@ define([
     var rprop = /(?:([a-zA-Z]+)([+-]*=[+-]*)*(\d+)*(px)?)/;
     domjs.fn.extend({
         css: function(prop, value){
-            return applyCss(prop, value);
+            // TODO: use processFn to get and set values
+            return applyCss(this, prop, value);
         }
     });
 });

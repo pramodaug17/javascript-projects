@@ -6,7 +6,7 @@ define([
     "./var/fn2string",
     "./var/objFnString",
     "./var/isLikeArray",
-    "./var/isfunction",
+    "./var/isFn",
     "./var/iswindowObj",
     "./var/toStringfn"
 ], function(arr, classType, getPrototypeOf, hasOwnProp, fn2string, objFnString,
