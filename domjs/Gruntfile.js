@@ -1,6 +1,6 @@
 
 module.exports = function(grunt) {
-    var root = ".";
+    var root = __dirname + "";
     grunt.log.writeln("Inside domjs... ");
 
     if(grunt.config()["build-domjs"] && grunt.config()["build-domjs"].rootdir)
@@ -15,14 +15,14 @@ module.exports = function(grunt) {
             }
         },
         karma: {
-            config: {
-                configFile: root + '/build/config/karma.conf.js'
+            "domjs-unit": {
+                configFile: root + '/build/conf/karma.conf.js'
             }
         }
     });
 
     require("load-grunt-tasks")(grunt);
-    grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks("grunt-karma");
 
     grunt.loadTasks(root + "/build/tasks");
     if(root === ".") {
