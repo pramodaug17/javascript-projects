@@ -41,7 +41,7 @@ var fn2string = hasOwnProp.toString;
 
 var objFnString = fn2string.call( Object );
 
-var isfunction = function ( obj ) {
+var isFn = function ( obj ) {
 
         // Support: Chrome <=57, Firefox <=52
         // In some browsers, typeof returns "function" for HTML <object> elements
@@ -76,7 +76,7 @@ var isLikeArray = function ( obj ) {
         var len = !!obj && "length" in obj && obj.length,
             type = intoType( obj );
 
-        if ( isfunction( obj ) || iswindowObj( obj ) ) {
+        if ( isFn( obj ) || iswindowObj( obj ) ) {
             return false;
         }
 
@@ -220,15 +220,17 @@ var
     });
     // Return the modified object
 
-    function applyCss(prop, value) {
-        var cssprop;
+    function applyCss(elem, prop, value) {
+        var cssprop = [null, null, null , null],
+            style, key, operator, valueprefix;
         if("string"  === intoType(prop)) {
             // "width=100px" "width=+10" "width=-10" "width+=10" "width-=10"
             // "width"
             cssprop = rprop.exec(prop);
-            if(null === cssprop[3] || undefined === value) {
-                // get CSS property
-            }
+            key = cssprop[1];
+            operator = cssprop[2];
+            value = cssprop[3] === null ? value: cssprop[3];
+            valueprefix = cssprop[4];
         } else if("array" === intoType(prop)) {
             // ["width=100px","height+=10","width-=10","width=-10",
             // "width=+10"]
@@ -237,11 +239,42 @@ var
         } else {
             // is not correct format
         }
+
+        style = elem.style;
+        //check if style property is predefined of new
+        var isCustomProp = (style && (style[prop]));
+
+        if(value !== undefined && value !== null) {
+            if(isCustomProp) {
+                // calculate value
+
+                // set value
+                elem.setProperty(key, value)
+            } else {
+                var currValue;
+                // calculate value
+                currValue = 3;
+                operator = operator.replace("=", "");
+                if(operator === "+"){
+                    // increment value by passed value
+                } else if(operator === "-") {
+                    // decrement value by passed value
+                } else{
+                    // replace value by passed value
+                }
+
+                //set value
+                style[key] = value;
+            }
+        } else {
+            // get value and return
+        }
     }
 var rprop = /(?:([a-zA-Z]+)([+-]*=[+-]*)*(\d+)*(px)?)/;
     domjs.fn.extend({
         css: function(prop, value){
-            applyCss(prop, value);
+            // TODO: use processFn to get and set values
+            return applyCss(this, prop, value);
         }
     });
 

@@ -13,11 +13,12 @@ module.exports = function(grunt) {
     grunt.loadTasks("domjs");
 
     grunt.registerTask("default", [
-         "build-domjs:*:*"
+        "build-domjs:*:*"
      ]);
 
     grunt.registerTask("domjs", [
-        "build-domjs:*:*"
+        "build-domjs:*:*",
+        "karma:domjs:*:*"
     ]);
 };
 
