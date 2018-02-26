@@ -41,7 +41,7 @@ var fn2string = hasOwnProp.toString;
 
 var objFnString = fn2string.call( Object );
 
-var isfunction = function ( obj ) {
+var isFn = function ( obj ) {
 
         // Support: Chrome <=57, Firefox <=52
         // In some browsers, typeof returns "function" for HTML <object> elements
@@ -76,7 +76,7 @@ var isLikeArray = function ( obj ) {
         var len = !!obj && "length" in obj && obj.length,
             type = intoType( obj );
 
-        if ( isfunction( obj ) || iswindowObj( obj ) ) {
+        if ( isFn( obj ) || iswindowObj( obj ) ) {
             return false;
         }
 
@@ -167,6 +167,7 @@ var
                 }
             }
         }
+        return target;
     };
 
     domjs.extend({
@@ -218,30 +219,68 @@ var
         +"Symbol").split(" "), function(_, name){
         classType["[object " + name + "]"] = name.toLowerCase();
     });
-    // Return the modified object
 
-    function applyCss(prop, value) {
-        var cssprop;
-        if("string"  === intoType(prop)) {
-            // "width=100px" "width=+10" "width=-10" "width+=10" "width-=10"
-            // "width"
-            cssprop = rprop.exec(prop);
-            if(null === cssprop[3] || undefined === value) {
-                // get CSS property
+
+    function processFn(elems, key, value, callback){
+        var len = elems,
+        i = 0,
+        isValueFn = false;
+
+        if(intoType(key) === "object")
+        {
+            for( i in key) {
+                processFn(elems, i, key[i], callback)
             }
-        } else if("array" === intoType(prop)) {
-            // ["width=100px","height+=10","width-=10","width=-10",
-            // "width=+10"]
-        } else if( "object" === intoType(prop)) {
-            // {width : "+10"}, {width: "10px"}
-        } else {
-            // is not correct format
         }
+
+        if(value !== undefined) {
+            isValueFn = isFn(value);
+        }
+        if(callback) {
+            for(i = 0; i < len; i++ ) {
+                callback(elems[i], key, isValueFn ?
+                    value.call(elems[i],i):
+                    value);
+            }
+        }
+
+
+    }
+
+    function computedStyle(elem) {
+        var view = elem.ownerDocument.defaultView;
+        if( !view || !view.opener) {
+            view = window;
+        }
+        return view.getComputedStyle(elem);
     }
 var rprop = /(?:([a-zA-Z]+)([+-]*=[+-]*)*(\d+)*(px)?)/;
+
+    domjs.extend({
+        style: function(elem, key, value) {
+            var retVal,
+            styles = computedStyle(elem);
+
+            return retVal;
+        }
+    });
+
     domjs.fn.extend({
         css: function(prop, value){
-            applyCss(prop, value);
+            // processFn to get and set values
+            return processFn(this, prop, value, function(elem, key, value){
+                var i = 0,
+                retVal;
+
+                if(Array.isArray(key)) {
+                    for(i=0; i < len; i++) {
+                        retVal[key[i]] = domjs.style(elem, key[i], value);
+                    }
+                } else {
+                    retVal = domjs.style(elem, key, value);
+                }
+                return retVal;
+            });
         }
     });
 

@@ -2,7 +2,7 @@ define([
     "./isFn",
     "./iswindowObj",
     "../core/intoType"
-], function(isfunction, iswindowObj, intoType){
+], function(isFn, iswindowObj, intoType){
     return function ( obj ) {
 
         // Support: real iOS 8.2 only (not reproducible in simulator)
@@ -12,7 +12,7 @@ define([
         var len = !!obj && "length" in obj && obj.length,
             type = intoType( obj );
 
-        if ( isfunction( obj ) || iswindowObj( obj ) ) {
+        if ( isFn( obj ) || iswindowObj( obj ) ) {
             return false;
         }
 

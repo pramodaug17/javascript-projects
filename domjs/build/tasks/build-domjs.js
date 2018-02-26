@@ -2,6 +2,7 @@
 module.exports = function(grunt) {
     var //fs = require( "fs" ),
         requirejs = require( "requirejs" ),
+        root = grunt.config().rootdir,
         //Insight = require( "insight" ),
         //pkg = require( "../../package.json" ),
         srcFolder = __dirname + "/../../src/",
@@ -15,7 +16,7 @@ module.exports = function(grunt) {
         wrapper = readf( "main.js" ).split( /[\x20\t]*\/\/ @CODE\n(?:[\x20\t]*\/\/[^\n]+\n)*/ ),
 
         config = {
-            baseUrl: "domjs/src",
+            baseUrl: root + "/src",
             name: "domjs",
 
             // Allow strict mode
@@ -86,7 +87,7 @@ module.exports = function(grunt) {
         if ( !optIn ) {
 
             // Overwrite the default inclusions with the explicit ones provided
-            config.rawText.jquery = "define([" +
+            config.rawText.domjs = "define([" +
                 ( included.length ? included.join( "," ) : "" ) +
                 "]);";
         }
@@ -156,4 +157,4 @@ module.exports = function(grunt) {
         }
         return contents;
     }
-}
+};

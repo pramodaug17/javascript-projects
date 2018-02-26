@@ -94,6 +94,7 @@ define([
                 }
             }
         }
+        return target;
     };
 
     domjs.extend({
@@ -145,6 +146,4 @@ define([
         +"Symbol").split(" "), function(_, name){
         classType["[object " + name + "]"] = name.toLowerCase();
     });
-    // Return the modified object
-    return target;
 });

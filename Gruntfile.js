@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     grunt.initConfig({
         //pkg: grunt.file.readJSON("package.json")
         "build-domjs": {
-            somedata: "Passed from root"
+            rootdir: "domjs"
         }
     });
 
@@ -12,12 +12,14 @@ module.exports = function(grunt) {
 
     grunt.loadTasks("domjs");
 
+
     grunt.registerTask("default", [
          "build-domjs:*:*"
      ]);
 
     grunt.registerTask("domjs", [
-        "build-domjs:*:*"
+        "build-domjs:*:*",
+        "karma"
     ]);
 };
 

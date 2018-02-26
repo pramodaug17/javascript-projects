@@ -2,7 +2,7 @@
   "name": "domjs",
   "version": "0.0.1",
   "description": "Libray to manipulate DOM object",
-  "main": "distrib/learngrunt.js",
+  "main": "dist/learngrunt.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
