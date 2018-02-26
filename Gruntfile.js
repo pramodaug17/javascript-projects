@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 
     grunt.registerTask("domjs", [
         "build-domjs:*:*",
-        "karma:domjs:*:*"
+        "karma:domjs-unit:*"
     ]);
 };
 

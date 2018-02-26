@@ -16,7 +16,7 @@ module.exports = function(grunt) {
         },
         karma: {
             "domjs-unit": {
-                configFile: root + '/build/conf/karma.conf.js'
+                configFile: root + '/build/config/karma.conf.js'
             }
         }
     });
@@ -28,7 +28,7 @@ module.exports = function(grunt) {
     if(root === ".") {
         grunt.registerTask("default", [
             "build-domjs:*:*",
-            "karma"
+            "karma:domjs-unit:*"
         ]);
     }
 };
