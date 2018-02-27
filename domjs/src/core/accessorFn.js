@@ -1,17 +1,20 @@
 define([
-    "../var/isFn"
-], function(isFn){
+    "../var/isFn",
+    "./intoType"
+], function(isFn, intoType){
     "use strict";
-    function processFn(elems, key, value, callback){
-        var len = elems,
+    function accessorFn(elems, key, value, callback){
+        var len = elems.length,
+            chainable = false,
             retVal,
             i = 0,
             isValueFn = false;
 
         if(intoType(key) === "object")
         {
+            chainable = true;
             for( i in key) {
-                processFn(elems, i, key[i], callback)
+                accessorFn(elems, i, key[i], callback)
             }
         }
 
@@ -19,13 +22,15 @@ define([
             isValueFn = isFn(value);
         }
         if(callback) {
-            for(i = 0; i < len; i++ ) {
+            for(i = 0; i < len; i++) {
                 retVal = callback(elems[i], key, isValueFn ?
-                    value.call(elems[i],i):
+                    value.call(elems[i], i) :
                     value);
             }
         }
+        if(chainable || retVal === undefined)
+            return elems;
         return retVal;
     }
-    return processFn;
+    return accessorFn;
 });

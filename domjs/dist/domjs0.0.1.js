@@ -87,11 +87,8 @@ var isLikeArray = function ( obj ) {
 var
         version = "0.0.1",
 
-        // Define a local copy of jQuery
+        // Define a local copy of domjs
         domjs = function( selector, context ) {
-
-            // The jQuery object is actually just the init constructor 'enhanced'
-            // Need init if jQuery is called (just allow error to be thrown if not included)
             return new domjs.fn.init( selector, context );
         };
 
@@ -221,15 +218,18 @@ var
     });
 
 
-    function processFn(elems, key, value, callback){
-        var len = elems,
-        i = 0,
-        isValueFn = false;
+    function accessorFn(elems, key, value, callback){
+        var len = elems.length,
+            chainable = false,
+            retVal,
+            i = 0,
+            isValueFn = false;
 
         if(intoType(key) === "object")
         {
+            chainable = true;
             for( i in key) {
-                processFn(elems, i, key[i], callback)
+                accessorFn(elems, i, key[i], callback)
             }
         }
 
@@ -237,45 +237,82 @@ var
             isValueFn = isFn(value);
         }
         if(callback) {
-            for(i = 0; i < len; i++ ) {
-                callback(elems[i], key, isValueFn ?
-                    value.call(elems[i],i):
+            for(i = 0; i < len; i++) {
+                retVal = callback(elems[i], key, isValueFn ?
+                    value.call(elems[i], i) :
                     value);
             }
         }
-
-
+        if(chainable || retVal === undefined)
+            return elems;
+        return retVal;
     }
-
-    function computedStyle(elem) {
+var computedStyle = function (elem) {
         var view = elem.ownerDocument.defaultView;
         if( !view || !view.opener) {
             view = window;
         }
         return view.getComputedStyle(elem);
+    };
+
+var getCssProp = function (elem, prop) {
+        return elem.style[prop] !== ""?
+            elem.style[prop]:
+            computedStyle(elem).getPropertyValue(prop);
     }
-var rprop = /(?:([a-zA-Z]+)([+-]*=[+-]*)*(\d+)*(px)?)/;
+
+var rcssvalue = new RegExp("(\\d+(p[txc]|e[mx]|[cm]m|v[hw]|(?:vm)?in|%)?)");
+
+var rcssprop = new RegExp("(?:([a-zA-Z\\-]+)([+\\-]?=[+\\-]?)?" +
+        rcssvalue.source +
+        "?)"
+    );
+
+
+    domjs.extend({
+        cssAccessor: {}
+    });
 
     domjs.extend({
         style: function(elem, key, value) {
-            var retVal,
-            styles = computedStyle(elem);
+            var styles = computedStyle(elem),
+                cssprop = rcssprop.exec(key),
+                op = [],
+                currVal;
 
-            return retVal;
+            if(value === undefined && cssprop[3] === undefined) {
+                // get css value
+                return getCssProp(elem, cssprop[1]);
+            }
+            // set css value
+            if(cssprop[1] in styles){
+                if(cssprop[2] && (op = (/[+|\-]/).exec(cssprop[2]) && op[1])) {
+                    currVal = getCssProp(elem, cssprop[1]);
+                    if(op === '+') {
+                        var initial = rcssvalue.exec(currVal)[2],
+                            unit = cssprop[4];
+                        elem.style[cssprop[1]] = parseFloat(currVal) + parseFloat(cssprop[3]);
+                    }
+                }
+            }
         }
     });
 
     domjs.fn.extend({
         css: function(prop, value){
             // processFn to get and set values
-            return processFn(this, prop, value, function(elem, key, value){
+            return accessorFn(this, prop, value, function(elem, key, value){
                 var i = 0,
-                retVal;
+                    len = 0,
+                    retVal,
+                    arrVal = [];
 
                 if(Array.isArray(key)) {
+                    len = key.length;
                     for(i=0; i < len; i++) {
-                        retVal[key[i]] = domjs.style(elem, key[i], value);
+                        arrVal[key[i]] = domjs.style(elem, key[i], value);
                     }
+                    return arrVal;
                 } else {
                     retVal = domjs.style(elem, key, value);
                 }

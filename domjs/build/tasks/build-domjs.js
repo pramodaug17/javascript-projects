@@ -57,7 +57,6 @@ module.exports = function(grunt) {
 
         // Filename can be passed to the command line using
         // command line options
-        // e.g. grunt build --filename=jquery-custom.js
         name = name ? ( "dist/" + name ) : this.data.dest;
 
         grunt.verbose.writeflags( excluded, "Excluded-" );
@@ -145,7 +144,7 @@ module.exports = function(grunt) {
         // AMD Name
         if ( ( amdName = grunt.option( "amd" ) ) != null && /^exports\/amd$/.test( name ) ) {
             if ( amdName ) {
-                grunt.log.writeln( "Naming jQuery with AMD name: " + amdName );
+                grunt.log.writeln( "Naming domjs with AMD name: " + amdName );
             } else {
                 grunt.log.writeln( "AMD name now anonymous" );
             }
