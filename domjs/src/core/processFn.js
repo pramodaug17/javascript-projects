@@ -4,8 +4,9 @@ define([
     "use strict";
     function processFn(elems, key, value, callback){
         var len = elems,
-        i = 0,
-        isValueFn = false;
+            retVal,
+            i = 0,
+            isValueFn = false;
 
         if(intoType(key) === "object")
         {
@@ -19,13 +20,12 @@ define([
         }
         if(callback) {
             for(i = 0; i < len; i++ ) {
-                callback(elems[i], key, isValueFn ?
+                retVal = callback(elems[i], key, isValueFn ?
                     value.call(elems[i],i):
                     value);
             }
         }
-
-
+        return retVal;
     }
     return processFn;
 });
