@@ -1,6 +1,8 @@
 define([
     // Files to include
-], function () {
+], function (rnum) {
     "use strict";
-    return new RegExp("(\\d+(p[txc]|e[mx]|[cm]m|v[hw]|(?:vm)?in|%)?)");
+    return new RegExp("([+\\-]=)?" +
+        rnum.source +
+        "(p[txc]|e[mx]|[cm]m|v[hw]|(?:vm)?in|%)?)");
 });

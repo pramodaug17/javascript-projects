@@ -32,7 +32,7 @@ describe("Counter tests", function () {
     });
 
     it("should return css property value", function () {
-        var divwidth = domjs("#fixture").css("position");
+        var divwidth = domjs("#fixture").css("width");
 
         // Assert
         expect(divwidth).toEqual("1254px");
@@ -40,7 +40,6 @@ describe("Counter tests", function () {
 
     it("should set css property value", function () {
         var divwidth = domjs("#fixture").css("width=100px");
-        console.info(divwidth);
 
         // Assert
         expect(divwidth.css("width")).toEqual("100px");
@@ -48,7 +47,6 @@ describe("Counter tests", function () {
 
     it("should increment css property value", function () {
         var divwidth = domjs("#fixture").css("width+=100px");
-        console.info(divwidth);
 
         // Assert
         expect(divwidth.css("width")).toEqual("1354px");

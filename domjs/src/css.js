@@ -4,33 +4,39 @@ define([
     "./css/var/computedStyle",
     "./css/var/getCssProp",
     "./css/var/rcssprop",
-    "./css/var/rcssvalue"
-], function(domjs, accessorFn, computedStyle, getCssProp, rcssprop, rcssvalue){
+    "./css/var/rcssvalue",
+    "./css/applyCss"
+], function(domjs, accessorFn, computedStyle, getCssProp, rcssprop, rcssvalue,
+            applyCss){
     "use strict";
     domjs.extend({
         cssAccessor: {}
     });
 
     domjs.extend({
-        style: function(elem, key, value) {
+        style: function(elem, key, value, option) {
             var styles = computedStyle(elem),
                 cssprop = rcssprop.exec(key),
                 op = [],
-                currVal;
 
-            if(value === undefined && cssprop[3] === undefined) {
+            key = cssprop[1];
+            value = (value) || (cssprop[3] ?
+                (cssprop[2] || "") + cssprop[3]:
+                undefined);
+
+            if(value === undefined) {
                 // get css value
-                return getCssProp(elem, cssprop[1]);
+                return getCssProp(elem, cssprop[1], option);
             }
+
             // set css value
-            if(cssprop[1] in styles){
-                if(cssprop[2] && (op = (/[+|\-]/).exec(cssprop[2]) && op[1])) {
-                    currVal = getCssProp(elem, cssprop[1]);
-                    if(op === '+') {
-                        var initial = rcssvalue.exec(currVal)[2],
-                            unit = cssprop[4];
-                        elem.style[cssprop[1]] = parseFloat(currVal) + parseFloat(cssprop[3]);
-                    }
+            if(key in styles){
+                // check for += or +
+                if((op = rcssvalue.exec(value)) && op[1]) {
+                    applyCss(elem, key, op);
+                } else {
+                    value = rcssvalue.exec(value)[2];
+                    elem.style[key] = value;
                 }
             }
         }

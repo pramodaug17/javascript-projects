@@ -255,44 +255,93 @@ var computedStyle = function (elem) {
         return view.getComputedStyle(elem);
     };
 
-var getCssProp = function (elem, prop) {
-        return elem.style[prop] !== ""?
+var getCssProp = function (elem, prop, option) {
+        return elem.style[prop] !== "" && option === undefined?
             elem.style[prop]:
             computedStyle(elem).getPropertyValue(prop);
     }
 
-var rcssvalue = new RegExp("(\\d+(p[txc]|e[mx]|[cm]m|v[hw]|(?:vm)?in|%)?)");
+var rcssvalue = new RegExp("([+\\-]?=?)?([\\d.]+\\d+(p[txc]|e[mx]|[cm]m|v[hw]|(?:vm)?in|%)?)");
 
-var rcssprop = new RegExp("(?:([a-zA-Z\\-]+)([+\\-]?=[+\\-]?)?" +
+var rcssprop = new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
         rcssvalue.source +
         "?)"
     );
 
+
+    function applyCss(elem, prop, valuepattern) {
+        var currVal,
+            initial,
+            scale = 0,
+            initialInUnit,
+            currentValue = function() {
+                return parseFloat(getCssProp(elem, prop, ""));
+            },
+            unit = valuepattern[3];
+
+        currVal = getCssProp(elem, prop);
+        initial = rcssvalue.exec(currVal)[3];
+
+        // convert unit is both unit is different
+        if ( initial !== unit ) {
+            currVal = parseFloat(currVal) / 2;
+            unit = unit || initial;
+
+            // Iteratively approximate from a nonzero starting point
+            initialInUnit = +currVal || 1;
+
+            while ( (scale * scale) !== 1 ) {
+                domjs.style( elem, prop, initialInUnit + unit );
+                scale = currentValue() / currVal || 0.5 ;
+                initialInUnit = initialInUnit / scale;
+
+            }
+
+            initialInUnit = initialInUnit * 2;
+            domjs.style( elem, prop, initialInUnit + unit );
+            currVal = initialInUnit;
+        }
+
+        if (-1 !== valuepattern[1].indexOf('+')) {
+
+            elem.style[prop] = (parseFloat(currVal) +
+                parseFloat(valuepattern[2])) + unit;
+        } else if (-1 !== valuepattern[1].indexOf('-')) {
+            elem.style[prop] = (parseFloat(currVal) -
+                parseFloat(valuepattern[2])) + unit;
+        } else {
+            elem.style[prop] = valuepattern[2];
+        }
+    }
 
     domjs.extend({
         cssAccessor: {}
     });
 
     domjs.extend({
-        style: function(elem, key, value) {
+        style: function(elem, key, value, option) {
             var styles = computedStyle(elem),
                 cssprop = rcssprop.exec(key),
                 op = [],
-                currVal;
 
-            if(value === undefined && cssprop[3] === undefined) {
+            key = cssprop[1];
+            value = (value) || (cssprop[3] ?
+                (cssprop[2] || "") + cssprop[3]:
+                undefined);
+
+            if(value === undefined) {
                 // get css value
-                return getCssProp(elem, cssprop[1]);
+                return getCssProp(elem, cssprop[1], option);
             }
+
             // set css value
-            if(cssprop[1] in styles){
-                if(cssprop[2] && (op = (/[+|\-]/).exec(cssprop[2]) && op[1])) {
-                    currVal = getCssProp(elem, cssprop[1]);
-                    if(op === '+') {
-                        var initial = rcssvalue.exec(currVal)[2],
-                            unit = cssprop[4];
-                        elem.style[cssprop[1]] = parseFloat(currVal) + parseFloat(cssprop[3]);
-                    }
+            if(key in styles){
+                // check for += or +
+                if((op = rcssvalue.exec(value)) && op[1]) {
+                    applyCss(elem, key, op);
+                } else {
+                    value = rcssvalue.exec(value)[2];
+                    elem.style[key] = value;
                 }
             }
         }
