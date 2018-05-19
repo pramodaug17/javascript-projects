@@ -26,30 +26,28 @@ describe("Counter tests", function () {
 
     it("should return css property value", function () {
         var divwidth = domjs("#fixture").css("width");
-
+        var b = window.getComputedStyle(document.body).getPropertyValue("width");
         // Assert
-        expect(divwidth).toEqual("1254px");
-    });
-
-    it("should return css property value", function () {
-        var divwidth = domjs("#fixture").css("width");
-
-        // Assert
-        expect(divwidth).toEqual("1254px");
+        expect(divwidth).toEqual(b);
     });
 
     it("should set css property value", function () {
-        var divwidth = domjs("#fixture").css("width=100px");
-
+        var w = 100;
+        var div = domjs("#fixture");
+        div.css("width=" + w +"px");
+        // document.getElementById("fixture").style.width = '100px';
+        var divwidth = div.css("width");
         // Assert
-        expect(divwidth.css("width")).toEqual("100px");
+        expect(divwidth).toEqual(w + "px");
     });
 
     it("should increment css property value", function () {
-        var divwidth = domjs("#fixture").css("width+=100px");
+        var o = 100;
+        var divwidth = domjs("#fixture").css("width+=" + o + "px");
+        var b = window.getComputedStyle(document.body).getPropertyValue("width");
+        var w = parseFloat(b) + o;
 
         // Assert
-        expect(divwidth.css("width")).toEqual("1354px");
+        expect(divwidth.css("width")).toEqual(w + "px");
     });
-
 });

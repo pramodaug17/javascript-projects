@@ -10,7 +10,7 @@ define([
     "./var/iswindowObj",
     "./var/toStringfn"
 ], function(arr, classType, getPrototypeOf, hasOwnProp, fn2string, objFnString,
-            isLikeArray, isfunction){
+            isLikeArray, isFn){
     var
         version = "@VERSION",
 
@@ -44,7 +44,7 @@ define([
         }
 
         // Handle case when target is a string or something (possible in deep copy)
-        if (typeof target !== "object" && !isfunction(target)) {
+        if (typeof target !== "object" && !isFn(target)) {
             target = {};
         }
 

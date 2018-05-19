@@ -4,13 +4,14 @@ define([
     "use strict";
     function applyCss(elem, prop, valuepattern) {
         var currVal,
+            final,
             initial,
             scale = 0,
             initialInUnit,
             currentValue = function() {
                 return parseFloat(getCssProp(elem, prop, ""));
             },
-            unit = valuepattern[3];
+            unit = valuepattern[2];
 
         currVal = getCssProp(elem, prop);
         initial = rcssvalue.exec(currVal)[3];
@@ -35,16 +36,10 @@ define([
             currVal = initialInUnit;
         }
 
-        if (-1 !== valuepattern[1].indexOf('+')) {
+        final = parseFloat(currVal) +
+            (valuepattern[0] + 1) * parseFloat(valuepattern[1]);
 
-            elem.style[prop] = (parseFloat(currVal) +
-                parseFloat(valuepattern[2])) + unit;
-        } else if (-1 !== valuepattern[1].indexOf('-')) {
-            elem.style[prop] = (parseFloat(currVal) -
-                parseFloat(valuepattern[2])) + unit;
-        } else {
-            elem.style[prop] = valuepattern[2];
-        }
+        return final
     }
     return applyCss;
 });
