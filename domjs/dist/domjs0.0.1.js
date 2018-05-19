@@ -117,7 +117,7 @@ var
         }
 
         // Handle case when target is a string or something (possible in deep copy)
-        if (typeof target !== "object" && !isfunction(target)) {
+        if (typeof target !== "object" && !isFn(target)) {
             target = {};
         }
 
@@ -261,7 +261,11 @@ var getCssProp = function (elem, prop, option) {
             computedStyle(elem).getPropertyValue(prop);
     }
 
-var rcssvalue = new RegExp("([+\\-]?=?)?([\\d.]+\\d+(p[txc]|e[mx]|[cm]m|v[hw]|(?:vm)?in|%)?)");
+var rnum = new RegExp("(?:[+-]?(?:\\d*\\.|)\\d+(?:[eE][+-]?\\d+|))");
+
+var rcssvalue = new RegExp("(?:([+\\-])?=)?(" +
+        rnum.source +
+        "(p[txc]|e[mx]|[cm]m|v[hw]|(?:vm)?in|%)?)");
 
 var rcssprop = new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
         rcssvalue.source +
@@ -271,13 +275,14 @@ var rcssprop = new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
 
     function applyCss(elem, prop, valuepattern) {
         var currVal,
+            final,
             initial,
             scale = 0,
             initialInUnit,
             currentValue = function() {
                 return parseFloat(getCssProp(elem, prop, ""));
             },
-            unit = valuepattern[3];
+            unit = valuepattern[2];
 
         currVal = getCssProp(elem, prop);
         initial = rcssvalue.exec(currVal)[3];
@@ -302,16 +307,10 @@ var rcssprop = new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
             currVal = initialInUnit;
         }
 
-        if (-1 !== valuepattern[1].indexOf('+')) {
+        final = parseFloat(currVal) +
+            (valuepattern[0] + 1) * parseFloat(valuepattern[1]);
 
-            elem.style[prop] = (parseFloat(currVal) +
-                parseFloat(valuepattern[2])) + unit;
-        } else if (-1 !== valuepattern[1].indexOf('-')) {
-            elem.style[prop] = (parseFloat(currVal) -
-                parseFloat(valuepattern[2])) + unit;
-        } else {
-            elem.style[prop] = valuepattern[2];
-        }
+        return final
     }
 
     domjs.extend({
@@ -322,28 +321,34 @@ var rcssprop = new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
         style: function(elem, key, value, option) {
             var styles = computedStyle(elem),
                 cssprop = rcssprop.exec(key),
-                op = [],
+                isNum = false,
+                key;
 
-            key = cssprop[1];
-            value = (value) || (cssprop[3] ?
-                (cssprop[2] || "") + cssprop[3]:
-                undefined);
+            // Remove input
+            cssprop.shift();
+            key = cssprop.shift();
+            value = value || (cssprop[1] ? cssprop[1]: undefined);
 
             if(value === undefined) {
                 // get css value
-                return getCssProp(elem, cssprop[1], option);
+                return getCssProp(elem, key, option);
             }
 
             // set css value
-            if(key in styles){
+            if(key in styles) {
                 // check for += or +
-                if((op = rcssvalue.exec(value)) && op[1]) {
-                    applyCss(elem, key, op);
-                } else {
-                    value = rcssvalue.exec(value)[2];
-                    elem.style[key] = value;
+                if (cssprop && cssprop[0]) {
+                    value = applyCss(elem, key, cssprop);
+                    isNum = true;
                 }
             }
+
+            if(isNum) {
+                value += (cssprop[2] || "px");
+            }
+
+            elem.style[key] = value;
+            // console.log("value set to " + value)
         }
     });
 
@@ -364,6 +369,7 @@ var rcssprop = new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
                     return arrVal;
                 } else {
                     retVal = domjs.style(elem, key, value);
+                    // console.log("style: " + elem.style.width)
                 }
                 return retVal;
             });
