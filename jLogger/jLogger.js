@@ -1,250 +1,266 @@
+/*
+ * Logger module
+ */
+(function(global) {
+    global.$log = (function() {
+        var idlogger = "plogger";
+        var idstarttime = "start_time";
+        var tabid = "log_anchor";
+        var bufid = "logs_holder";
+        var buf = null;
+        var bufbeforeload = [];
+        var islogenabled = false;
+        var initialized = false;
+        var windiv = null;
 
-(function(obj, undefined) {
-    window.logger = window.logger || jLogger();
-    var isLoggerOn = false;
-    var onconsolealso = false;
-    var logBox = null;
-    var hideRegex = new RegExp("hide");
-    var logBeforeLoad = [];
-
-    Number.prototype.pad = function(size) {
-        var s = String(this);
-        while (s.length < (size || 2)) {s = "0" + s;}
-        return s;
-    };
-
-    function createLogBox() {
-        var container = document.createElement("div");
-        var div = document.createElement("div");
-
-        div.id = "logBox";
-        div.className = "logBox";
-
-        container.className = 'log-container';
-        container.appendChild(div);
-
-        return div;
-    }
-
-    function createLogLine() {
-        var div = document.createElement("div");
-        var time = document.createElement("span");
-        var msg = document.createElement("span");
-
-        time.className = "time";
-        msg.className = "log-text";
-
-        div.appendChild(time);
-        div.appendChild(msg);
-
-        return div;
-    }
-
-    function printonconsole(type, msg) {
-        if( onconsolealso && console && ('error' === type || 'critical' === type)) {
-            console.error(msg);
+        function createDiv() {
+            return document.createElement("div");
         }
-        else if( onconsolealso && console && 'warn' === type) {
-            console.warn(msg);
-        }
-        else if( onconsolealso && console && 'info' === type) {
-            console.info(msg);
-        }
-        else if( onconsolealso && console && 'debug' === type) {
-            console.debug(msg);
-        }
-    }
 
-    function addLogLine(logline){
-        if(null === logBox) {
-            logBeforeLoad.push(logline);
-        }
-        else {
-            // logBox.insertBefore(logline, logBox.firstChild);
-            logBox.appendChild(logline);
-            logBox.scrollTop = logBox.scrollHeight;
-        }
-    }
+        function createLoggerWindow() {
+            let ldiv = createDiv();
 
-    function initLoggerSection(opts) {
-        /* Find log box. If not found then created new */
-        if ( (logBox = document.getElementById("logBox")) === null ) {
-            logBox = createLogBox();
-            document.body.appendChild(logBox);
+            ldiv.className = "log-window";
+            ldiv.innerHTML = '<div class="log-tab" id="log_anchor">Log</div><div class="log-div-title"> \
+							=======| Lite logger, started on <span id="start_time"></span> |======= \
+							</div> \
+						<div class="log-container"><div class="log-entry-list" id="logs_holder"></div></div>';
+            return ldiv;
         }
-        isLoggerOn = true;
 
-        while(logBeforeLoad.length) {
-            addLogLine(logBeforeLoad.shift());
+        function on(event, ele, cb) {
+            try {
+                if (ele.addEventListener) {
+                    ele.addEventListener(event, cb, false); //W3C
+                } else {
+                    ele.attachEvent('on' + event, cb); //IE
+                }
+            } catch (e) {}
         }
-    }
-    window.onload = initLoggerSection;/*
-    initLoggerSection();
-*/
-    function toggleLogboxDisplay() {
-        var className = logBox !== null ? logBox.className : "" ;
 
-        if( "" === className )
-            return;
-
-        if( -1 !== className.search( hideRegex ) ) {
-            showLogBox();
-        }
-        else {
-            hideLogBox();
-        }
-    }
-    function showLogBox() {
-        var className = logBox !== typeof "undefined" ? logBox.className : "" ;
-
-        if( "" === className )
-            return;
-
-        if( -1 !== className.search( hideRegex ) ) {
-            var arr = (className.replace( hideRegex, "" )).split(" ");
-            while( -1 !== arr.indexOf("")) {
-                arr.splice((arr.indexOf("")), 1);
+        function tabclicked() {
+            /* Toggle display of Log window */
+            let classes = this.parentNode.className.split(' ');
+            if (-1 === classes.indexOf('hide')) {
+                this.parentNode.className += ' hide';
+                //debug_log("hiding div");
+            } else {
+                classes.splice(classes.indexOf('hide'), 1);
+                this.parentNode.className = classes.join(' ');
+                //debug_log("unhiding div");
             }
-            className = arr.join(' ');
-            logBox.className = className;
         }
-    }
-    function hideLogBox() {
-        var className = logBox !== typeof "undefined" ? logBox.className : "" ;
 
-        if( "" === className )
-            return;
-
-        if( -1 === className.search( hideRegex ) ) {
-            className += " hide";
-            logBox.className = className;
+        function initTab() {
+            let tab = document.getElementById(tabid);
+            on("click", tab, tabclicked);
         }
-    }
 
-    function toggleLogBox(value) {
-        if( typeof value === "undefined")
-            toggleLogboxDisplay();
-        else if( value )
-            showLogBox();
-        else
-            hideLogBox();
-    }
+        function getDay(dt) {
+            let days = [
+                "Sunday",
+                "Monday",
+                "Tueday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday"
+            ];
 
-    function enableLogger(value) {
-        isLoggerOn = value;
-    }
+            return days[dt.getDay()]
+        }
 
-    function enableconsole(value) {
-        onconsolealso = value;
-    }
+        function getDate(dt) {
+            let months = [
+                "January", "February", "March",
+                "April", "May", "June",
+                "July", "August", "September",
+                "October", "November", "December"
+            ];
+            let date = ("0" + dt.getDate()).slice(-2);
 
-    function printCritical(msg) {
-        if( !isLoggerOn)
-            return;
-        var logline = createLogLine();
-        var time = new Date();
+            return (months[dt.getMonth()] + " " + date + ", " + dt.getFullYear());
+        }
 
-        printonconsole('critical', msg);
+        function getDaynDate(dt) {
+            return (getDay(dt) + ", " + getDate(dt));
+        }
 
-        logline.className = "critical";
-        logline.children[0].innerHTML = time.getHours().pad() + ":" +
-            time.getMinutes().pad() + ":" + time.getSeconds().pad();
-        logline.children[1].innerHTML = msg;
+        function getTime(dt) {
+            let hr = "0" + dt.getHours();
+            let min = "0" + dt.getMinutes();
+            let sec = "0" + dt.getSeconds();
 
-        addLogLine(logline);
-    }
+            return (hr.slice(-2) + ":" + min.slice(-2) + ":" + sec.slice(-2));
+        }
 
-    function printError(msg) {
-        if( !isLoggerOn)
-            return;
+        function insertStartTime() {
+            let now = new Date();
+            document.getElementById(idstarttime).innerText = getDate(now) + " " + getTime(now);
+        }
 
-        var logline = createLogLine();
-        var time = new Date();
+        function initrest() {
+            /* register logger event */
+            if (global.events) {
+                events.registerEvent("log error");
+                events.on("log error", function(str) {
+                    error_log(str);
+                });
 
-        printonconsole('error', msg);
+                events.registerEvent("log info");
+                events.on("log info", function(str) {
+                    info_log(str);
+                });
 
-        logline.className = "error";
-        logline.children[0].innerHTML = time.getHours().pad() + ":" +
-            time.getMinutes().pad() + ":" + time.getSeconds().pad();
-        logline.children[1].innerHTML = msg;
+                events.registerEvent("log debug");
+                events.on("log debug", function(str) {
+                    debug_log(str);
+                });
+            }
 
-        addLogLine(logline);
-    }
-    function printWarn(msg) {
-        if( !isLoggerOn)
-            return;
-        printonconsole('warn', msg);
+            /* Add event click event listener to open and close log window */
+            initTab();
 
-        var logline = createLogLine();
-        var time = new Date();
+            /* Insert logging start time */
+            insertStartTime();
 
-        logline.className = "warn";
-        logline.children[0].innerHTML = time.getHours().pad() + ":" +
-            time.getMinutes().pad() + ":" + time.getSeconds().pad();
-        logline.children[1].innerHTML = msg;
+            /* Get Log buffer div */
+            buf = document.getElementById(bufid);
 
-        addLogLine(logline);
+            initialized = true;
 
-    }
-    function printInfo(msg) {
-        if( !isLoggerOn)
-            return;
+            /* Insert buffer which is before page load */
+            bufbeforeload.forEach(function(div) {
+                insertlog(div);
+            });
 
-        printonconsole('info', msg);
+            /* TODO: custom scrollbar needs to add */
+            on("wheel", buf.parentNode, function(e) {
+                // get the old value of the translation (there has to be an easier way than this)
+                var oldVal = parseInt(buf.style['margin-top']);
 
-        var logline = createLogLine();
-        var time = new Date();
+                // to make it work on IE or Chrome
+                var variation = parseInt(e.deltaY);
 
-        logline.className = "info";
-        logline.children[0].innerHTML = time.getHours().pad() + ":" +
-            time.getMinutes().pad() + ":" + time.getSeconds().pad();
-        logline.children[1].innerHTML = msg;
+                /* update the body translation to simulate a scroll */
+                if (variation > 0) { /* For scroll down */
+                    if (oldVal <= (this.clientHeight - buf.clientHeight)) {
+                        buf.style['margin-top'] = "" + (this.clientHeight - buf.clientHeight) + "px";
+                        return false;
+                    }
+                } else if (variation < 0) { /* For scroll up */
+                    if (oldVal >= 0) {
+                        buf.style['margin-top'] = "0px";
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+                //debug_log("translateY(" + (oldVal - variation) + "px");
+                buf.style['margin-top'] = "" + (oldVal - variation) + "px";
 
-        addLogLine(logline);
-    }
-    function printDebug(msg) {
-        if( !isLoggerOn)
-            return;
+                return false;
+            }, true);
+        }
 
-        printonconsole('debug', msg);
+        function initonload() {
+            document.body.appendChild(windiv);
+            initrest();
+        }
 
-        var logline = createLogLine();
-        var time = new Date();
+        function init_logger(opt) {
+            opt = opt || {};
+            windiv = document.getElementById(idlogger);
+            if (!windiv) {
+                windiv = createLoggerWindow();
+                try {
+                    islogenabled = true;
 
-        logline.className = "debug";
-        logline.children[0].innerHTML = time.getHours().pad() + ":" +
-            time.getMinutes().pad() + ":" + time.getSeconds().pad();
-        logline.children[1].innerHTML = msg;
+                    document.body.appendChild(windiv);
+                    initrest();
+                } catch (e) {
+                    on("load", window, initonload);
+                    return;
+                }
+            } else {
+                console.log("Logger is not initialize!!");
+                return;
+            }
+        }
 
-        addLogLine(logline);
-    }
+        function getEntryDiv(now, logstr) {
+            let div = createDiv();
+            let entry = "";
 
-    function jLogger() {
+            entry += '<span class="log-time">' + getTime(now) + '</span>';
+            entry += '<span class="log-text">' + logstr + '</span>';
+
+            div.innerHTML = entry;
+            return div;
+        }
+
+        function insertlog(log) {
+            if (initialized) {
+                buf.appendChild(log);
+
+                /* scroll to bottom */
+                buf.style['margin-top'] = (buf.parentNode.clientHeight - buf.clientHeight) < 0 ?
+                    (buf.parentNode.clientHeight - buf.clientHeight) + "px" :
+                    "0";
+            } else {
+                bufbeforeload.push(log);
+            }
+        }
+
+        function error_log(logstr) {
+            if (!islogenabled)
+                return;
+            let entrydiv = getEntryDiv((new Date), logstr);
+            entrydiv.className = "log-entry log-error";
+
+            insertlog(entrydiv);
+        }
+
+        function info_log(logstr) {
+            if (!islogenabled)
+                return;
+            let entrydiv = getEntryDiv((new Date), logstr);
+            entrydiv.className = "log-entry log-info";
+
+            insertlog(entrydiv);
+        }
+
+        function debug_log(logstr) {
+            if (!islogenabled)
+                return;
+            let entrydiv = getEntryDiv((new Date), logstr);
+            entrydiv.className = "log-entry log-debug";
+
+            insertlog(entrydiv);
+        }
+
+        function enable_log() {
+            islogenabled = true;
+        }
+
+        function disable_log() {
+            islogenabled = false;
+        }
+
         return {
-            toggle: function(value) {
-                toggleLogBox(value);
-            },
-            enable: function(value) {
-                enableLogger(value);
-            },
-            enableonconsole: function (value) {
-                enableconsole(value);
-            },
-            critical : function(text) {
-                printCritical(text);
-            },
-            error : function(text) {
-                printError(text);
-            },
-            warn: function(text) {
-                printWarn(text);
-            },
-            info : function(text) {
-                printInfo(text);
-            },
-            debug : function(text) {
-                printDebug(text);
-            }
+            init: init_logger,
+            error: error_log,
+            info: info_log,
+            debug: debug_log,
+            enable: enable_log,
+            disable: disable_log
         }
-    }
-})(this);
+    })();
+})(window);
+
+$log.init();
+for (let i = 10; i; i--)
+    $log.info("This is info log");
+//$log.debug("This is debug log");
+//$log.error("This is error log");
+

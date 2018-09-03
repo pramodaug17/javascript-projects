@@ -1,71 +1,85 @@
-.log-container
-{
-    position: fixed;
-    margin: 0;
-    padding: 10px 0 0 0;
-    bottom: 0;
+.log-window {
+    background: rgba(0, 0, 0, 0.85);
+    position: absolute;
     left: 0;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+    bottom: 0;
+    right: 0;
+    border: 1px solid #777;
+    color: #fff;
+    font-family: Verdana;
+    font-size: 1em;
+    height: 150px;
+    -webkit-transition: height 2s;
+    /* Safari */
+    transition: height 2s;
 }
 
-.logBox
-{
-    padding: 0 5px 5px 5px;
+.log-window.hide {
+    height: 0px;
+    -webkit-transition: height 2s;
+    /* Safari */
+    transition: height 2s;
+}
+
+.log-tab {
+    background: rgba(0, 0, 0, 0.85);
+    position: absolute;
+    bottom: 100%;
+    left: 5px;
+    border: 1px solid #666;
+    border-bottom: none;
+    padding: 2px 8px;
+    border-radius: 5px 5px 0 0;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.log-div-title {
+    position: relative;
+    margin: 0;
+    border-top: 1px solid #888;
+    padding: 3px 10px 10px;
+    line-height: 1.3em;
+    font-size: 0.9em;
+    height: 14%;
+    color: rgb(15, 95, 255);
     overflow-x: hidden;
-    overflow-y: scroll;
-    height: 150px;/*
-    background-color: rgba(0, 0, 0, 0.7); */
-    font-family: monospace;
+    white-space: nowrap;
 }
 
-.hide
-{
-    display: none;
+.log-container {
+    height: 77.5%;
+    overflow-y: hidden;
 }
 
-.critical, .warn, .error, .info, .debug
-{
-    padding: 1px 0 0 5px;
+.log-entry-list {}
+
+.log-entry {
+    padding: 2px 0 2px 5px;
+    font-size: 0.8em;
 }
 
-.error
-{
-    color: red;
+.log-time {
+    display: inline-block;
+    width: 5em;
+    margin: 0 3px 0 0;
+    white-space: nowrap;
 }
 
-.error .log-text
-{
-    font-weight: bolder;
+.log-time::after {
+    content: '';
+    margin: 0 3px;
 }
 
-.critical
-{
-    color: orangered;
+.log-debug {
+    color: rgb(180, 180, 180);
 }
 
-.warn
-{
-    color: orange;
+.log-info {
+    color: rgb(255, 255, 50);
 }
 
-.info
-{
-    color: yellow;
+.log-error {
+    color: rgb(255, 80, 80);
 }
 
-.debug
-{
-    color: white;
-}
-
-.time
-{
-    color: lightslategrey;
-}
-
-.log-text
-{
-    margin-left: 2px;
-    padding-left: 8px;
-}
