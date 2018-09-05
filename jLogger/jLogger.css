@@ -8,17 +8,20 @@
     color: #fff;
     font-family: Verdana;
     font-size: 1em;
-    height: 150px;
-    -webkit-transition: height 2s;
-    /* Safari */
-    transition: height 2s;
+    height: 200px;
 }
 
 .log-window.hide {
     height: 0px;
-    -webkit-transition: height 2s;
+}
+
+.log-window,
+.log-window.hide,
+.log-div-title,
+.hide .log-div-title {
+    -webkit-transition: 1500ms;
     /* Safari */
-    transition: height 2s;
+    transition: 1500ms;
 }
 
 .log-tab {
@@ -41,15 +44,24 @@
     padding: 3px 10px 10px;
     line-height: 1.3em;
     font-size: 0.9em;
+    min-height: 19px;
     height: 14%;
+    max-height: 25px;
     color: rgb(15, 95, 255);
-    overflow-x: hidden;
+    overflow: hidden;
     white-space: nowrap;
 }
 
 .log-container {
-    height: 77.5%;
+    height: 74.5%;
     overflow-y: hidden;
+}
+
+.hide .log-div-title,
+.hide .log-container {
+    margin: 0;
+    padding: 0;
+    min-height: 0;
 }
 
 .log-entry-list {}
@@ -82,4 +94,3 @@
 .log-error {
     color: rgb(255, 80, 80);
 }
-
