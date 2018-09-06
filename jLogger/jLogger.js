@@ -1,5 +1,6 @@
 /*
  * Logger module
+ * TODO: Add filter feature in logger
  */
 (function(global) {
     global.$log = (function() {
@@ -21,17 +22,25 @@
             let ldiv = createDiv();
 
             ldiv.className = "log-window";
-            ldiv.innerHTML = '<div class="log-tab" id="log_anchor">Log</div><div class="log-div-title"> \
-							=======| Lite logger, started on <span id="start_time"></span> |======= \
-							</div> \
-						<div class="log-container"><div class="log-entry-list" id="logs_holder"></div></div>';
+            /* TODO: add option to first view as minimized */
+
+            ldiv.innerHTML = '<div class="log-tab" id="log_anchor">Log</div>';
+            ldiv.innerHTML += '<div class="log-div-title"> \
+                            =======| Lite logger, started on \
+                            <span id="start_time"></span> |======= \
+                            </div>';
+            ldiv.innerHTML += '<div class="log-container"> \
+                            <div class="log-entry-list" id="logs_holder"> \
+                            </div></div>';
+
             return ldiv;
         }
 
-        function on(event, ele, cb) {
+        function on(event, ele, cb, usecapture) {
+            usecapture = usecapture || false;
             try {
                 if (ele.addEventListener) {
-                    ele.addEventListener(event, cb, false); //W3C
+                    ele.addEventListener(event, cb, usecapture); //W3C
                 } else {
                     ele.attachEvent('on' + event, cb); //IE
                 }
@@ -43,11 +52,9 @@
             let classes = this.parentNode.className.split(' ');
             if (-1 === classes.indexOf('hide')) {
                 this.parentNode.className += ' hide';
-                //debug_log("hiding div");
             } else {
                 classes.splice(classes.indexOf('hide'), 1);
                 this.parentNode.className = classes.join(' ');
-                //debug_log("unhiding div");
             }
         }
 
@@ -96,7 +103,8 @@
 
         function insertStartTime() {
             let now = new Date();
-            document.getElementById(idstarttime).innerText = getDate(now) + " " + getTime(now);
+            document.getElementById(idstarttime).innerText = getDate(now) + " "
+                + getTime(now);
         }
 
         function initrest() {
@@ -139,8 +147,8 @@
                 // get the old value of the translation (there has to be an easier way than this)
                 var oldVal = parseInt(buf.style['margin-top']);
 
-                // to make it work on IE or Chrome
-                var variation = parseInt(e.deltaY);
+                // to make it work on IE or Chrome. double the variation
+                var variation = parseInt(e.deltaY) * 2;
 
                 /* update the body translation to simulate a scroll */
                 if (variation > 0) { /* For scroll down */
@@ -204,7 +212,7 @@
                 buf.appendChild(log);
 
                 /* scroll to bottom */
-                buf.style['margin-top'] = (buf.parentNode.clientHeight - buf.clientHeight) < 0 ?
+                buf.style['margin-top'] = (buf.parentNode.clientHeight < buf.clientHeight) ?
                     (buf.parentNode.clientHeight - buf.clientHeight) + "px" :
                     "0";
             } else {
@@ -259,8 +267,11 @@
 })(window);
 
 $log.init();
-for (let i = 10; i; i--)
-    $log.info("This is info log");
-//$log.debug("This is debug log");
-//$log.error("This is error log");
-
+for(let i = 11; i ; i--) {
+    if(0 === (i % 3))
+        $log.info("This is info log == " + i);
+    if(1 === (i % 3))
+        $log.debug("This is debug log == " + i);
+    if(2 === (i % 3))
+        $log.error("This is error log == " + i);
+}
