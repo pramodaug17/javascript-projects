@@ -168,7 +168,7 @@
                 buf.style['margin-top'] = "" + (oldVal - variation) + "px";
 
                 return false;
-            }, true);
+            }, false);
         }
 
         function initonload() {

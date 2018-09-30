@@ -1,3 +1,6 @@
+body {
+     postion: relative;
+}
 .log-window {
     background: rgba(0, 0, 0, 0.85);
     position: absolute;
@@ -9,6 +12,7 @@
     font-family: Verdana;
     font-size: 1em;
     height: 200px;
+    z-index: 999;
 }
 
 .log-window.hide {
