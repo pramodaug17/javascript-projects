@@ -58,7 +58,7 @@ body {
 
 .log-container {
     height: 74.5%;
-    /* overflow-y: hidden; */
+    overflow-y: hidden;
 }
 
 .hide .log-div-title,
