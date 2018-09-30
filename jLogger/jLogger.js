@@ -143,15 +143,15 @@
             });
 
             /* TODO: custom scrollbar needs to add */
-            on("wheel", buf, function(e) {
+	    function scrollLogPage(e) {
                 // get the old value of the translation (there has to be an easier way than this)
                 var oldVal = parseInt(buf.style['margin-top']);
 
                 // to make it work on IE or Chrome. double the variation
                 var variation = parseInt(e.deltaY) * 2;
 
-		/* to stop bubbling effect */
-		event.stopPropagation();
+                /* to stop bubbling effect */
+                event.stopPropagation();
                 /* update the body translation to simulate a scroll */
                 if (variation > 0) { /* For scroll down */
                     if (oldVal <= (this.clientHeight - buf.clientHeight)) {
@@ -170,6 +170,15 @@
                 buf.style['margin-top'] = "" + (oldVal - variation) + "px";
 
                 return false;
+            }
+
+	    /* Register scroll event */
+	    on("scroll", buf, function(e) {
+		scrollLogPage(e);
+	    }, false);
+            on("wheel", buf, function(e) {
+		e.stopPropagation();
+		return false;
             }, false);
         }
 
