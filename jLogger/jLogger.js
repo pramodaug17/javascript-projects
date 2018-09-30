@@ -150,6 +150,8 @@
                 // to make it work on IE or Chrome. double the variation
                 var variation = parseInt(e.deltaY) * 2;
 
+		/* to stop bubbling effect */
+		event.stopPropagation();
                 /* update the body translation to simulate a scroll */
                 if (variation > 0) { /* For scroll down */
                     if (oldVal <= (this.clientHeight - buf.clientHeight)) {
