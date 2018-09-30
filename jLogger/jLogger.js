@@ -143,7 +143,7 @@
             });
 
             /* TODO: custom scrollbar needs to add */
-            on("wheel", buf.parentNode, function(e) {
+            on("wheel", buf, function(e) {
                 // get the old value of the translation (there has to be an easier way than this)
                 var oldVal = parseInt(buf.style['margin-top']);
 
