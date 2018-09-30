@@ -287,11 +287,11 @@
 })(window);
 
 $log.init();
-for(let i = 11; i ; i--) {
+/*for(let i = 11; i ; i--) {
     if(0 === (i % 3))
         $log.info("This is info log == " + i);
     if(1 === (i % 3))
         $log.debug("This is debug log == " + i);
     if(2 === (i % 3))
         $log.error("This is error log == " + i);
-}
+}*/
