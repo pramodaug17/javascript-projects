@@ -21,7 +21,7 @@
         function createLoggerWindow() {
             let ldiv = createDiv();
 
-            ldiv.className = "log-window";
+            ldiv.className = "log-window hide";
             /* TODO: add option to first view as minimized */
 
             ldiv.innerHTML = '<div class="log-tab" id="log_anchor">Log</div>';
@@ -286,8 +286,8 @@
     })();
 })(window);
 
-$log.init();
-/*for(let i = 11; i ; i--) {
+/*$log.init();
+for(let i = 11; i ; i--) {
     if(0 === (i % 3))
         $log.info("This is info log == " + i);
     if(1 === (i % 3))
