@@ -1,5 +1,8 @@
 /node_modules
+/.idea
+/.settings
+
 *.bak
 *.bak.*
 package-lock.json
-/.idea
+.project
