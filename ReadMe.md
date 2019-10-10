@@ -1,4 +1,5 @@
 # Javascript projects
+[![Build Status](https://travis-ci.org/pramodaug17/javascript-projects.svg?branch=master)](https://travis-ci.org/pramodaug17/javascript-projects)   
 
 ## Decription
 This repository contains javascript.
