@@ -1,0 +1,14 @@
+# safelist
+branches:
+  only:
+  - master
+  - stable
+  
+# Project settings
+language: node_js
+node_js:
+  - 7
+before_script:
+  - npm install -g grunt
+  - npm install
+script: grunt
