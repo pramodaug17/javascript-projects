@@ -1,5 +1,6 @@
 # Javascript projects
-[![Build Status](https://travis-ci.org/pramodaug17/javascript-projects.svg?branch=master)](https://travis-ci.org/pramodaug17/javascript-projects)   
+[![Build Status](https://travis-ci.org/pramodaug17/javascript-projects.svg?branch=master)](https://travis-ci.org/pramodaug17/javascript-projects)
+[![codecov](https://codecov.io/gh/pramodaug17/javascript-projects/branch/master/graph/badge.svg)](https://codecov.io/gh/pramodaug17/javascript-projects)
 
 ## Decription
 This repository contains javascript.
