@@ -7,8 +7,12 @@ branches:
 # Project settings
 language: node_js
 node_js:
+  - 10
   - 7
 before_script:
   - npm install -g grunt
+  - npm install -g codecov
   - npm install
-script: grunt
+script: 
+  - grunt
+  - codecov
