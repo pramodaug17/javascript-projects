@@ -1,6 +1,7 @@
 # Javascript projects
 [![Build Status](https://travis-ci.org/pramodaug17/javascript-projects.svg?branch=master)](https://travis-ci.org/pramodaug17/javascript-projects)
 [![codecov](https://codecov.io/gh/pramodaug17/javascript-projects/branch/master/graph/badge.svg)](https://codecov.io/gh/pramodaug17/javascript-projects)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fpramodaug17%2Fjavascript-projects.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fpramodaug17%2Fjavascript-projects?ref=badge_shield)
 
 ## Decription
 This repository contains javascript.
