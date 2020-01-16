@@ -6,3 +6,4 @@
 *.bak.*
 package-lock.json
 .project
+*.code-workspace
