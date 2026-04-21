@@ -1,6 +1,6 @@
 define([
-    "./classType"
-], function(classType){
-    "use strict";
-    return classType.toString;
+  "./classType"
+], function (classType) {
+  "use strict";
+  return classType.toString;
 });

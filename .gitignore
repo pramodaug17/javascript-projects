@@ -1,8 +1,11 @@
+# Folders to be ignored
 /node_modules
 /.idea
 /.settings
 
+# Files to be ignored
 *.bak
+*.zip
 *.bak.*
 package-lock.json
 .project

@@ -1,5 +1,5 @@
-describe("Domjs", function(){
-    it("should be defined", function() {
-        expect(domjs).toBeDefined();
-    });
+describe("Domjs", function () {
+  it("should be defined", function () {
+    expect(domjs).toBeDefined();
+  });
 });

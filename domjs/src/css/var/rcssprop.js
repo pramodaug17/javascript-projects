@@ -1,10 +1,10 @@
 define([
-    // Files to include
-    "./rcssvalue"
+  // Files to include
+  "./rcssvalue"
 ], function (rcssvalue) {
-    "use strict";
-    return new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
-        rcssvalue.source +
-        "?)"
-    );
+  "use strict";
+  return new RegExp("(?:([a-zA-Z\\-]+[a-zA-Z])" +
+    rcssvalue.source +
+    "?)"
+  );
 });
