@@ -1,0 +1,20 @@
+{
+  "name": "domjs",
+  "version": "0.0.1",
+  "description": "Libray which is simplified version of react",
+  "main": "dist/vDom/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start" : "npx http-server ."
+  },
+  "keywords": [
+    "Grunt",
+    "autobuild",
+    "javascript"
+  ],
+  "author": "Pramod Jain",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+  }
+}
