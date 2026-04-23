@@ -37,7 +37,6 @@ function Button(props) {
   function clickHandler() {
     // call the callback from parent
     props?.onSendData();
-    // setCount(count + 1);
   }
   return createElement(
     "button",

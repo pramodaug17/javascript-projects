@@ -9,12 +9,10 @@ export function useCallback(callback, deps) {
   let hook;
 
   if (oldHook && areHookInputsEqual(deps, oldHook.deps)) {
-    // hook = hookManager.createHook(oldHook.state);
-    // hook.deps = oldHook.deps;
-    hook = {
-      state: oldHook.state,
-      deps: oldHook.state
-    }
+    oldHook.deps = oldHook.state
+    hook = hookManager.createHook({
+      oldHook: oldHook
+    });
   } else {
     hook = hookManager.createHook({
       oldHook: null,

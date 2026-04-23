@@ -9,12 +9,9 @@ export function useMemo(factory, deps) {
   let hook;
 
   if(oldHook && areHookInputsEqual(deps, oldHook.deps)) {
-    // reuse previous value
-    //hook = hookManager.createHook(oldHook.state, oldHook.queue, oldHook.deps );
-    hook = {
-      state: oldHook.state,
-      deps: oldHook.deps
-    };
+    hook = hookManager.createHook({
+      oldHook : oldHook
+    });
   } else {
     // recompute
     const value = factory();

@@ -45,7 +45,7 @@ export function updateDom(dom, prev = {}, next = {}) {
     .filter(key => key!== 'children' && !key.startsWith("on"))
     .forEach(key => {
       if (!(key in next))
-        dom[key] = "";;
+        dom[key] = "";
     }
   );
 

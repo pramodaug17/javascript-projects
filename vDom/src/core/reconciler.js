@@ -23,14 +23,11 @@ export function reconcile(wipFiber, elements, deletions) {
 
   const keyedOldFibers = new Map();
   
-
   let current = oldFiber;
   while (current) {
     keyedOldFibers.set(getElementKey(current, current.index), current);
     current = current.sibling;
   }
-
-
 
   let prevSibling = null;
 

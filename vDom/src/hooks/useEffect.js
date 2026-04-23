@@ -16,7 +16,7 @@ export function useEffect(effect, deps) {
   if(hasChanged) {
     hook = hookManager.createHook({
       oldHook: null,
-      initila: null, 
+      initial: null, 
       deps: deps
     });
     hook.effect = effect;

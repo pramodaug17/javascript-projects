@@ -10,6 +10,7 @@ import { DevTools } from "./devtools/DevTools.js";
 import { useMemo } from "./hooks/useMemo.js";
 import { useCallback } from "./hooks/useCallback.js";
 import { useEffect } from "./hooks/useEffect.js";
+import { useState } from "./hooks/useState.js";
 
 const laneManager = new LaneManager();
 const renderer = new DOMRenderer();
@@ -30,7 +31,7 @@ window.createElement=createElement;
 window.render=(el,container,lane=Lanes.DefaultLane)=>
     engine.render(el,container,lane);
 
-window.useState = (...args) => engine.hookManager.useState(...args);
+window.useState = (...args) => useState(...args);
 window.useMemo = useMemo;
 window.useCallback = useCallback;
 window.useEffect = useEffect;

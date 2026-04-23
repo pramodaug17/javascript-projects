@@ -31,15 +31,6 @@ export class Scheduler {
       // const lane = this.laneManager.getNextLane();
       const nextLane = getHighestPriorityLane(this.laneManager.pendingLanes);
 
-      /* not require as preemption should happen when task is executing
-      if (this.currentLane && lane < this.currentLane) {
-          this.currentLane = lane;
-          this.engine.prepareFreshStack();
-          break;
-      }
-
-      this.currentLane = lane;                        */
-
       // When starting new lane, prepare fresh stack
       if (!this.engine.nextUnitOfWork) {
         this.engine.prepareFreshStack();
@@ -47,9 +38,9 @@ export class Scheduler {
 
       while (this.engine.nextUnitOfWork && !shouldYield) {
         // Checking if any higher lane has pending task
-        if (this.currentLane && lane < this.currentLane) {
-          this.currentLane = lane;
-          this.engine.currentLane = lane;
+        if (this.currentLane && nextLane < this.currentLane) {
+          this.currentLane = nextLane;
+          this.engine.currentLane = nextLane;
           this.engine.prepareFreshStack();
           shouldYield = true;
         }
