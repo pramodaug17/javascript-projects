@@ -62,9 +62,10 @@ export class DevTools {
     node.stylecursor = "pointer";
 
     const laneStr = fiber.lanes ? fiber.lanes.toString(2) : "0";
+    const childLaneStr = fiber.childLanes ? fiber.childLanes.toString(2) : "0";
 
     let name = fiber.type?.name || fiber.type;
-    node.textContent = `${name} (lane: ${laneStr})`;
+    node.textContent = `${name} (lanes: ${laneStr}, childLane: ${childLaneStr})`;
 
     node.onclick = () => {
       this.selectedFiberId = fiber.id;

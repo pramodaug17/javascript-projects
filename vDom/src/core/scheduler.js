@@ -1,5 +1,6 @@
 
 import { getHighestPriorityLane } from "../lanes/Lanes.js"
+import { MessageScheduler } from "./messageScheduler.js";
 
 export class Scheduler {
   constructor(engine, laneManager) {
@@ -8,10 +9,14 @@ export class Scheduler {
     this.isWorking = false;
     this.currentLane = 0;
     this.isBatchScheduled = false;
+    this.deadline = 0;
+    this.messageScheduler = new MessageScheduler();
   }
 
   scheduleUpdate(lane) {
     this.laneManager.addLane(lane);
+
+    // Pick hihgest priority lane
 
     // batch multiple calls in same tick
     if(!this.isBatchScheduled) {
@@ -24,12 +29,17 @@ export class Scheduler {
     }
   }
 
-  workLoop(deadline) {
+  workLoop() {
     let shouldYield = false;
 
     while (this.laneManager.hasWork()) {
       // const lane = this.laneManager.getNextLane();
       const nextLane = getHighestPriorityLane(this.laneManager.pendingLanes);
+
+      if(!this.currentLane) {
+        this.currentLane = nextLane;
+        this.engine.currentLane = nextLane;
+      }
 
       // When starting new lane, prepare fresh stack
       if (!this.engine.nextUnitOfWork) {
@@ -37,20 +47,19 @@ export class Scheduler {
       }
 
       while (this.engine.nextUnitOfWork && !shouldYield) {
+        const highPrioLane = getHighestPriorityLane(this.laneManager.pendingLanes);
         // Checking if any higher lane has pending task
-        if (this.currentLane && nextLane < this.currentLane) {
-          this.currentLane = nextLane;
-          this.engine.currentLane = nextLane;
+        if (this.currentLane && highPrioLane !== this.currentLane) {
+          this.currentLane = highPrioLane;
+          this.engine.currentLane = highPrioLane;
           this.engine.prepareFreshStack();
-          shouldYield = true;
+          //shouldYield = true;
         }
 
         this.engine.nextUnitOfWork =
-          this.engine.performUnitOfWork(this.engine.nextUnitOfWork);
+          this.engine.performUnitOfWork(this.engine.nextUnitOfWork, this.currentLane);
 
-        if (deadline.timeRemaining() < 1) {
-          shouldYield = true;
-        }
+        shouldYield = this.messageScheduler.shouldYield();
       }
 
       if (!this.engine.nextUnitOfWork) {
@@ -61,7 +70,7 @@ export class Scheduler {
         this.isBatchScheduled = false;
       }
 
-      if (shouldYield) break;
+      if (this.shouldYield()) break;
     }
 
     if (this.laneManager.hasWork()) {
@@ -74,18 +83,27 @@ export class Scheduler {
 
   // FIX 1
   scheduleCallback(callback) {
+    if(typeof MessageChannel !== 'undefined') {
+      this.messageScheduler.schedule( () => {
+        callback();
+      })
+    }
     if (typeof requestIdleCallback !== 'undefined') {
       requestIdleCallback((deadline) => {
         this.isBatchScheduled = false;
-        callback(deadline);
+        this.deadline = deadline.timeRemaining() + performance.now();
+        callback();
       });
     } else {
       setTimeout(() => {
         this.isBatchScheduled = false;
-        callback({
-          timeRemaining: () => 999
-        });
+        this.deadline = 999 + performance.now();
+        callback();
       }, 0);
     }
+  }
+
+  shouldYield() {
+    return performance.now() >= this.deadline;
   }
 }

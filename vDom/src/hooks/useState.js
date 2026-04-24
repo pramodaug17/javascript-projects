@@ -1,4 +1,5 @@
-import { Lanes } from "../lanes/Lanes.js";
+import { propogateLaneToParent } from "../core/FiberNode.js";
+import { Lanes, mergeLane } from "../lanes/Lanes.js";
 
 
 export function useState(initial) {
@@ -27,7 +28,14 @@ export function useState(initial) {
   const setState = action => {
     queueRef.push(action);
 
-    engine.scheduler.scheduleUpdate(Lanes.DefaultLane);
+    const lane = Lanes.SyncLane;
+    let fiber = engine.wipFiber;
+
+    mergeLane(fiber.lanes, lane)
+
+    propogateLaneToParent(fiber, lane);
+
+    engine.scheduler.scheduleUpdate(lane);
   };
 
   hookManager.pushHook(hook);

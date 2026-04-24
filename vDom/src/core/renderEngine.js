@@ -1,8 +1,8 @@
 
-import { FiberNode } from "./FiberNode.js";
+import { clearFiberLanes, FiberNode, getNextFiber } from "./FiberNode.js";
 import { reconcile } from "./reconciler.js";
 import { updateDom } from "./dom.js";
-import { Lanes } from "../lanes/Lanes.js";
+import { includesSomeLanes, Lanes } from "../lanes/Lanes.js";
 import { hasStateUpdate } from "../hooks/hookUtils.js";
 
 export class RendererEngine {
@@ -14,7 +14,6 @@ export class RendererEngine {
     this.deletions = [];
     this.wipFiber = null;
     this.hookIndex = 0;
-    this.currentLane = 0;
   }
 
   prepareFreshStack() {
@@ -48,14 +47,19 @@ export class RendererEngine {
     this.wipRoot.dom = container;
     this.wipRoot.alternate = this.currentRoot;
 
+    // Add lanes
+    this.wipRoot.lane = Lanes.NoLane;
+    this.wipRoot.childLane = Lanes.NoLane;
+    this.wipRoot.pendingLane = Lanes.NoLane;
+    this.wipRoot.renderLane = Lanes.NoLane;
+
     this.nextUnitOfWork = this.wipRoot;
     this.deletions = [];
 
     this.scheduler.scheduleUpdate(Lanes.SyncLane);
   }
 
-  performUnitOfWork(fiber) {
-    fiber.lanes |= this.currentLane;
+  performUnitOfWork(fiber, renderLane) {
     if (typeof fiber.type === "function") {
       const isMemo = fiber.type.__isMemo;
 
@@ -63,11 +67,15 @@ export class RendererEngine {
         isMemo && 
         fiber.alternate &&
         shallowEqual(fiber.props, fiber.alternate.props) &&
-        !hasStateUpdate(fiber)
+        !hasStateUpdate(fiber) &&
+        !includesSomeLanes(fiber.lane, renderLane) &&
+        !includesSomeLanes(fiber.childLane,renderLane)
       ) {
+        console.log("Bailout: ", fiber.type);
         // SKIP render
         fiber.child = fiber.alternate.child;
-        return null;z
+        fiber.hooks = fiber.alternate.hooks;
+        return getNextFiber(fiber);
       }
 
       // normal rendering
@@ -110,6 +118,9 @@ export class RendererEngine {
 
     // Deletions
     this.deletions.forEach(f => this.commitDeletion(f));
+
+    // clear lanes after commit
+    clearFiberLanes(this.wipRoot);
 
     // Swap tress
     this.currentRoot = this.wipRoot;
@@ -190,6 +201,9 @@ export class RendererEngine {
     // Now execute the siblings effects
     this.runEffects(fiber.sibling);
   }
+
+  ////-------------------------- Helper Functions -------------------------------------------------
+
 
 
   ///--------------------------- DevTool Releted Methods -------------------------------------------
